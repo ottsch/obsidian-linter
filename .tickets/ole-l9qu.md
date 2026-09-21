@@ -1,6 +1,6 @@
 ---
 id: ole-l9qu
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-09-21T00:03:18Z
@@ -21,3 +21,9 @@ Keep the existing RulesRunner and rule implementations as the formatting authori
 
 The fork builds the existing Obsidian plugin; a headless caller can lint Markdown without Obsidian installed; the CLI supports check and write modes; output is covered by parity and idempotence tests.
 
+
+## Notes
+
+**2026-09-21T02:06:35Z**
+
+Completed all child tickets: the Bun-compatible headless API, CLI check/write workflows, timestamp ownership review, representative parity fixtures, idempotence coverage, and CLI stress testing. Plugin build, headless tests, full Jest, ESLint, and CodeRabbit review passed.
