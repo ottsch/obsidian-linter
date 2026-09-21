@@ -3,10 +3,10 @@ import RuleBuilder, {BooleanOptionBuilder, ExampleBuilder, OptionBuilderBase} fr
 import dedent from 'ts-dedent';
 import {IgnoreTypes} from '../utils/ignore-types';
 import {allHeadersRegex} from '../utils/regex';
-import {BooleanOption} from '../option';
-import {ConfirmRuleDisableModal} from '../ui/modals/confirm-rule-disable-modal';
-import {App} from 'obsidian';
-import LinterPlugin from '../main';
+import type {BooleanOption} from '../option';
+import {openConfirmRuleDisableModal} from '../ui/confirm-rule-disable';
+import type {App} from 'obsidian';
+import type LinterPlugin from '../main';
 import {ProtectedRanges} from '../utils/protected-ranges';
 import {textReplacement} from '../utils/strings';
 import {applyNonOverlappingReplacements} from '../utils/text-edits';
@@ -188,12 +188,12 @@ export default class HeaderIncrement extends RuleBuilder<HeaderIncrementOptions>
           const filenameHeadingEnableOption = rulesDict['file-name-heading'].options[0] as BooleanOption;
 
           if (value && filenameHeadingEnableOption.getValue(plugin)) {
-            new ConfirmRuleDisableModal(app, 'rules.header-increment.start-at-h2.name', 'rules.file-name-heading.name', async () => {
+            openConfirmRuleDisableModal(app, 'rules.header-increment.start-at-h2.name', 'rules.file-name-heading.name', async () => {
               await filenameHeadingEnableOption.setValue(false, plugin);
             },
             async () => {
               await (rulesDict['header-increment'].options[1] as BooleanOption).setValue(false, plugin);
-            }).open();
+            });
           }
         },
       }),

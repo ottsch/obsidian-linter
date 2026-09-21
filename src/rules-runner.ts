@@ -1,4 +1,5 @@
-import {TFile, moment} from 'obsidian';
+import type {TFile} from 'obsidian';
+import moment from 'moment';
 import {logDebug, logWarn, timingBegin, timingEnd} from './utils/logger';
 import {getDisabledRules, rules, wrapLintError, Rule, RuleType, Options} from './rules';
 import BlockquotifyOnPaste from './rules/blockquotify-on-paste';
@@ -45,7 +46,7 @@ export type RunLinterRulesOptions = {
   defaultMisspellings: Map<string, string>,
 }
 
-type FileInfo = {
+export type FileInfo = {
   name: string,
   createdAtFormatted: string,
   modifiedAtFormatted: string,

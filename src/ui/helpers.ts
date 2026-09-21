@@ -1,8 +1,14 @@
-import { sanitizeHTMLToDom } from 'obsidian';
+type HtmlSanitizer = (text: string) => DocumentFragment;
+
+let htmlSanitizer: HtmlSanitizer | undefined;
+
+export function setHtmlSanitizer(sanitizer: HtmlSanitizer): void {
+  htmlSanitizer = sanitizer;
+}
 
 export function setElContent(text: string, el: HTMLElement) {
-  if (text.includes('</')) {
-    el.append(sanitizeHTMLToDom(text));
+  if (htmlSanitizer) {
+    el.replaceChildren(htmlSanitizer(text));
   } else {
     el.setText(text);
   }
@@ -12,6 +18,5 @@ export function setElContent(text: string, el: HTMLElement) {
 // <code>, <b>), otherwise return the plain string. Suitable for `desc` fields
 // on SettingDefinitionItem and for setting.setDesc(...) in render callbacks.
 export function richDescription(text: string): string | DocumentFragment {
-  if (!text.includes('</')) return text;
-  return sanitizeHTMLToDom(text);
+  return htmlSanitizer ? htmlSanitizer(text) : text;
 }

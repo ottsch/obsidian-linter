@@ -5,10 +5,10 @@ import {IgnoreTypes} from '../utils/ignore-types';
 import {escapeMarkdownSpecialCharacters, textReplacement} from '../utils/strings';
 import {applyNonOverlappingReplacements} from '../utils/text-edits';
 import {ProtectedRanges} from '../utils/protected-ranges';
-import {App} from 'obsidian';
-import {BooleanOption} from '../option';
-import {ConfirmRuleDisableModal} from '../ui/modals/confirm-rule-disable-modal';
-import LinterPlugin from '../main';
+import type {App} from 'obsidian';
+import type {BooleanOption} from '../option';
+import {openConfirmRuleDisableModal} from '../ui/confirm-rule-disable';
+import type LinterPlugin from '../main';
 
 class FileNameHeadingOptions implements Options {
   @RuleBuilder.noSettingControl()
@@ -28,14 +28,14 @@ export default class FileNameHeading extends RuleBuilder<FileNameHeadingOptions>
         const headerIncrementEnableOption = headerIncrementOptions.options[0] as BooleanOption;
         const headerIncrementStartAtH2Option = headerIncrementOptions.options[1] as BooleanOption;
         if (value && headerIncrementEnableOption.getValue(plugin)) {
-          new ConfirmRuleDisableModal(app, 'rules.file-name-heading.name', 'rules.header-increment.start-at-h2.name', async () => {
+          openConfirmRuleDisableModal(app, 'rules.file-name-heading.name', 'rules.header-increment.start-at-h2.name', async () => {
             await headerIncrementStartAtH2Option.setValue(false, plugin);
             plugin.settingsTab.update();
           },
           async () => {
             await (rulesDict['file-name-heading'].options[0] as BooleanOption).setValue(false, plugin);
             plugin.settingsTab.update();
-          }).open();
+          });
         }
       },
     });

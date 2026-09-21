@@ -1,12 +1,15 @@
 import {Example, Options, Rule, RuleType, registerRule, wrapLintError} from '../rules';
 import {BooleanOption, DropdownOption, DropdownRecord, MdFilePickerOption, MomentFormatOption, Option, ListItemOption, TextOption} from '../option';
 import {logDebug, timingBegin, timingEnd} from '../utils/logger';
-import {getTextInLanguage, LanguageStringKey} from '../lang/helpers';
-import {IgnoreType, IgnoreTypes} from '../utils/ignore-types';
-import {LintContext, ProtectedRanges} from '../utils/protected-ranges';
-import {LinterSettings} from '../settings-data';
-import {App} from 'obsidian';
-import LinterPlugin from '../main';
+import {getTextInLanguage} from '../lang/helpers';
+import type {LanguageStringKey} from '../lang/helpers';
+import {IgnoreTypes} from '../utils/ignore-types';
+import type {IgnoreType} from '../utils/ignore-types';
+import {LintContext} from '../utils/protected-ranges';
+import type {ProtectedRanges} from '../utils/protected-ranges';
+import type {LinterSettings} from '../settings-data';
+import type {App} from 'obsidian';
+import type LinterPlugin from '../main';
 import type {ListItemValidation} from '../ui/modals/add-list-entry-modals';
 
 // limit the amount of text that can be written to the logs to try to prevent memory issues

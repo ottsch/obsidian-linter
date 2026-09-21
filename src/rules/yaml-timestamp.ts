@@ -2,7 +2,8 @@ import {Options, RuleType} from '../rules';
 import RuleBuilder, {BooleanOptionBuilder, DropdownOptionBuilder, ExampleBuilder, MomentFormatOptionBuilder, OptionBuilderBase, TextOptionBuilder} from './rule-builder';
 import dedent from 'ts-dedent';
 import {formatYAML, initYAML} from '../utils/yaml';
-import {moment} from 'obsidian';
+import moment from 'moment';
+import type {Moment} from 'moment';
 import {escapeDollarSigns} from '../utils/regex';
 import {insert} from '../utils/strings';
 import parseFormat from 'moment-parseformat';
@@ -41,7 +42,7 @@ class YamlTimestampOptions implements Options {
     locale?: string = 'en';
 
   @RuleBuilder.noSettingControl()
-    currentTime?: moment.Moment;
+    currentTime?: Moment;
 
   @RuleBuilder.noSettingControl()
     fileName?: string;
@@ -196,7 +197,7 @@ export default class YamlTimestamp extends RuleBuilder<YamlTimestampOptions> {
 
     return text;
   }
-  parseValueToCurrentFormatIfPossible(timestamp: string, format: string, locale: string, utc: boolean): moment.Moment | null {
+  parseValueToCurrentFormatIfPossible(timestamp: string, format: string, locale: string, utc: boolean): Moment | null {
     if (timestamp == undefined) {
       return null;
     }
@@ -222,7 +223,7 @@ export default class YamlTimestamp extends RuleBuilder<YamlTimestampOptions> {
 
     return match.replace(key + ':', '').trim();
   }
-  getTimeDifferenceInSeconds(modifiedDateTimeMetadata: moment.Moment, yamlModifiedDateTime: moment.Moment, options: YamlTimestampOptions): number {
+  getTimeDifferenceInSeconds(modifiedDateTimeMetadata: Moment, yamlModifiedDateTime: Moment, options: YamlTimestampOptions): number {
     // the metadata value may not be in the correct format, so we need to convert it to the correct format
     // and then do the time comparison otherwise we get erroneously large differences in seconds
     // see https://github.com/platers/obsidian-linter/issues/568

@@ -1,17 +1,15 @@
-import {App, ExtraButtonComponent, normalizePath, TFile, ToggleComponent} from 'obsidian';
+import type {App, ExtraButtonComponent, TFile, ToggleComponent} from 'obsidian';
 import type {SettingDefinition, SettingDefinitionItem, SettingDefinitionList, SettingDefinitionPage} from 'obsidian';
 import {getTextInLanguage, LanguageStringKey} from './lang/helpers';
-import LinterPlugin from './main';
+import type LinterPlugin from './main';
 import {richDescription} from './ui/helpers';
-import {LinterSettings} from './settings-data';
-import { CustomAutoCorrectContent } from './settings-data';
-import MdFileSuggester from './ui/suggesters/md-file-suggester';
-import {ParseResultsModal} from './ui/modals/parse-results-modal';
-import {ListItemsModal, ListItemValidation} from './ui/modals/add-list-entry-modals'
+import type {LinterSettings, CustomAutoCorrectContent} from './settings-data';
+import type {ListItemValidation} from './ui/modals/add-list-entry-modals';
 import {parseCustomReplacements, stripCr} from './utils/strings';
-import {LinterSettingsKeys} from './settings-data';
+import type {LinterSettingsKeys} from './settings-data';
 
-function getFileFromPath(app: App, filePath: string): TFile | null {
+async function getFileFromPath(app: App, filePath: string): Promise<TFile | null> {
+  const {normalizePath, TFile} = await import('obsidian');
   const file = app.vault.getAbstractFileByPath(normalizePath(filePath));
   if (file instanceof TFile) {
     return file;
@@ -156,18 +154,22 @@ export class ListItemOption extends Option {
         emptyState: getTextInLanguage(this.emptyStateKey),
         values: values,
         allowReorder: this.allowReorder,
-        openAddForm: () => new ListItemsModal(plugin.app, null, this.fieldPlaceholderKey, this.trimItemWhitespace, async (entry) => {
-          values.push(entry);
-          await this.writeAndSave(values, plugin);
-          update();
+        openAddForm: () => {
+          void import('./ui/modals/add-list-entry-modals').then(({ListItemsModal}) => new ListItemsModal(plugin.app, null, this.fieldPlaceholderKey, this.trimItemWhitespace, async (entry) => {
+            values.push(entry);
+            await this.writeAndSave(values, plugin);
+            update();
+          },
+          this.validator).open());
         },
-        this.validator).open(),
-        openEditForm: (entry, index) => new ListItemsModal(plugin.app, entry, this.fieldPlaceholderKey, this.trimItemWhitespace, async (updated) => {
-          values[index] = updated;
-          await this.writeAndSave(values, plugin);
-          update();
+        openEditForm: (entry, index) => {
+          void import('./ui/modals/add-list-entry-modals').then(({ListItemsModal}) => new ListItemsModal(plugin.app, entry, this.fieldPlaceholderKey, this.trimItemWhitespace, async (updated) => {
+            values[index] = updated;
+            await this.writeAndSave(values, plugin);
+            update();
+          },
+          this.validator).open());
         },
-        this.validator).open(),
         editTooltip: getTextInLanguage('edit-tooltip'),
         onDelete: (index) => {
           values.splice(index, 1);
@@ -255,34 +257,36 @@ export class MdFilePickerOption extends Option {
       render: (setting) => {
         const selectedFiles = filesPicked.map((f) => f.filePath);
         let infoButton: ExtraButtonComponent;
-        setting.addSearch((cb) => {
-          new MdFileSuggester(app, cb.inputEl, selectedFiles);
-          cb.setPlaceholder(getTextInLanguage('options.custom-auto-correct.file-search-placeholder-text'))
-              .setValue(pickedFile.filePath)
-              .onChange(async (newPath) => {
-                if (newPath === '' || newPath === cb.inputEl.getAttribute('fileName')) {
-                  const file = getFileFromPath(app, newPath);
-                  pickedFile.filePath = newPath;
-                  if (file) {
-                    pickedFile.customReplacements = parseCustomReplacements(stripCr(await app.vault.read(file)));
-                    infoButton.setDisabled(false);
-                    infoButton.extraSettingsEl.addClass('clickable-icon');
-                  } else {
-                    pickedFile.customReplacements = null;
-                    infoButton.setDisabled(true);
-                    infoButton.extraSettingsEl.removeClass('clickable-icon');
+        void import('./ui/suggesters/md-file-suggester').then(({default: MdFileSuggester}) => {
+          setting.addSearch((cb) => {
+            new MdFileSuggester(app, cb.inputEl, selectedFiles);
+            cb.setPlaceholder(getTextInLanguage('options.custom-auto-correct.file-search-placeholder-text'))
+                .setValue(pickedFile.filePath)
+                .onChange(async (newPath) => {
+                  if (newPath === '' || newPath === cb.inputEl.getAttribute('fileName')) {
+                    const file = await getFileFromPath(app, newPath);
+                    pickedFile.filePath = newPath;
+                    if (file) {
+                      pickedFile.customReplacements = parseCustomReplacements(stripCr(await app.vault.read(file)));
+                      infoButton.setDisabled(false);
+                      infoButton.extraSettingsEl.addClass('clickable-icon');
+                    } else {
+                      pickedFile.customReplacements = null;
+                      infoButton.setDisabled(true);
+                      infoButton.extraSettingsEl.removeClass('clickable-icon');
+                    }
+                    filesPicked[index] = pickedFile;
+                    await plugin.saveSettings();
                   }
-                  filesPicked[index] = pickedFile;
-                  await plugin.saveSettings();
-                }
-              });
+                });
+          });
         });
         setting.addExtraButton((cb) => {
           infoButton = cb;
           cb.setIcon('info')
               .setTooltip(getTextInLanguage('options.custom-auto-correct.show-parsed-contents-tooltip'))
               .onClick(() => {
-                new ParseResultsModal(app, pickedFile).open();
+                void import('./ui/modals/parse-results-modal').then(({ParseResultsModal}) => new ParseResultsModal(app, pickedFile).open());
               });
           if (pickedFile.filePath === '') {
             cb.setDisabled(true);
@@ -311,7 +315,7 @@ export class MdFilePickerOption extends Option {
             .onClick(async () => {
               for (const replacementFileInfo of filesPicked) {
                 if (replacementFileInfo.filePath !== '') {
-                  const file = getFileFromPath(app, replacementFileInfo.filePath);
+                  const file = await getFileFromPath(app, replacementFileInfo.filePath);
                   if (file) {
                     replacementFileInfo.customReplacements = parseCustomReplacements(stripCr(await app.vault.cachedRead(file)));
                   }

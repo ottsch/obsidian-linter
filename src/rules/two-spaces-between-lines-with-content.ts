@@ -3,10 +3,10 @@ import RuleBuilder, {DropdownOptionBuilder, ExampleBuilder, OptionBuilderBase} f
 import dedent from 'ts-dedent';
 import {IgnoreTypes} from '../utils/ignore-types';
 import {LineBreakIndicators, addTwoSpacesAtEndOfLinesFollowedByAnotherLineOfTextContent} from '../utils/mdast';
-import {BooleanOption} from '../option';
-import {ConfirmRuleDisableModal} from '../ui/modals/confirm-rule-disable-modal';
-import {App} from 'obsidian';
-import LinterPlugin from '../main';
+import type {BooleanOption} from '../option';
+import {openConfirmRuleDisableModal} from '../ui/confirm-rule-disable';
+import type {App} from 'obsidian';
+import type LinterPlugin from '../main';
 import {ProtectedRanges} from '../utils/protected-ranges';
 
 class TwoSpacesBetweenLinesWithContentOptions implements Options {
@@ -24,14 +24,14 @@ export default class TwoSpacesBetweenLinesWithContent extends RuleBuilder<TwoSpa
       disableConflictingOptions(value: boolean, app: App, plugin: LinterPlugin): void {
         const paragraphBlankLinesEnableOption = rulesDict['paragraph-blank-lines'].options[0] as BooleanOption;
         if (value && paragraphBlankLinesEnableOption.getValue(plugin)) {
-          new ConfirmRuleDisableModal(app, 'rules.two-spaces-between-lines-with-content.name', 'rules.paragraph-blank-lines.name', async () => {
+          openConfirmRuleDisableModal(app, 'rules.two-spaces-between-lines-with-content.name', 'rules.paragraph-blank-lines.name', async () => {
             await paragraphBlankLinesEnableOption.setValue(false, plugin);
             plugin.settingsTab.update();
           },
           async () => {
             await (rulesDict['two-spaces-between-lines-with-content'].options[0] as BooleanOption).setValue(false, plugin);
             plugin.settingsTab.update();
-          }).open();
+          });
         }
       },
     });

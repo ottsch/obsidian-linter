@@ -1,6 +1,6 @@
 ---
 id: ole-00nm
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-09-21T00:03:18Z
@@ -22,3 +22,9 @@ Reuse the registered upstream rules and ordering. Replace only runtime-only Obsi
 
 A headless API accepts text, path/name, creation time, modification time, current time, locale, and settings; it runs without Obsidian installed; the existing plugin build remains green.
 
+
+## Notes
+
+**2026-09-21T00:29:25Z**
+
+Implemented src/headless.ts with metadata-driven linting, removed eager Obsidian imports from the core graph, made rule registration Bun-compatible, and verified headless execution without the Obsidian package. Validation: full Jest 82 passed/1 skipped, full ESLint, and bun run build.

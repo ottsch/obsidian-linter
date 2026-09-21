@@ -7,13 +7,15 @@ import {
   BooleanOption,
 } from './option';
 import {LinterError} from './linter-error';
-import {getTextInLanguage, LanguageStringKey} from './lang/helpers';
-import {IgnoreType} from './utils/ignore-types';
-import {LintContext, ProtectedRanges} from './utils/protected-ranges';
-import {LinterSettings} from './settings-data';
-import {App} from 'obsidian';
+import {getTextInLanguage} from './lang/helpers';
+import type {LanguageStringKey} from './lang/helpers';
+import type {IgnoreType} from './utils/ignore-types';
+import {LintContext} from './utils/protected-ranges';
+import type {ProtectedRanges} from './utils/protected-ranges';
+import type {LinterSettings} from './settings-data';
+import type {App} from 'obsidian';
 import {YAMLParseError} from 'yaml';
-import LinterPlugin from './main';
+import type LinterPlugin from './main';
 
 export type Options = object;
 

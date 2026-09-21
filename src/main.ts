@@ -1,4 +1,4 @@
-import {App, Editor, EventRef, MarkdownView, Menu, Notice, Plugin, TAbstractFile, TFile, TFolder, WorkspaceLeaf, addIcon, htmlToMarkdown, EditorSelection, EditorChange, normalizePath, MarkdownFileInfo, debounce, Debouncer, getLanguage} from 'obsidian';
+import {App, Editor, EventRef, MarkdownView, Menu, Notice, Plugin, TAbstractFile, TFile, TFolder, WorkspaceLeaf, addIcon, htmlToMarkdown, EditorSelection, EditorChange, normalizePath, MarkdownFileInfo, debounce, Debouncer, getLanguage, sanitizeHTMLToDom} from 'obsidian';
 import {Options, RuleType, ruleTypeToRules, rules, sortRules} from './rules';
 import DiffMatchPatch from 'diff-match-patch';
 import dedent from 'ts-dedent';
@@ -21,6 +21,9 @@ import {warn} from 'loglevel';
 import { CustomAutoCorrectContent } from './settings-data';
 import {downloadMisspellings, readInMisspellingsFile} from './utils/auto-correct-misspellings';
 import {DiffPreviewView, diffPreviewViewType} from './ui/views/diff-preview-view';
+import {setHtmlSanitizer} from './ui/helpers';
+
+setHtmlSanitizer(sanitizeHTMLToDom);
 
 // https://github.com/liamcain/obsidian-calendar-ui/blob/03ceecbf6d88ef260dadf223ee5e483d98d24ffc/src/localization.ts#L20-L43
 const langToMomentLocale = {
