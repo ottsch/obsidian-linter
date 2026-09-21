@@ -28,6 +28,17 @@ Here is an example of linting the current file via an Obsidian Command:
 
 ![Demo](../assets/demo.gif)
 
+## Headless CLI
+
+The fork also provides a Bun CLI for linting files without Obsidian:
+
+```sh
+bun run lint:headless -- --check notes/example.md
+bun run lint:headless -- --write --config path/to/data.json notes/*.md
+```
+
+`--check` never writes and exits with status 1 when a file would change. `--write` updates only changed files. Without `--config`, the CLI loads `.obsidian/plugins/obsidian-linter/data.json` relative to the current directory.
+
 ## File Menu Action Items
 
 There is also the option to lint files or folders by right clicking on them from the file menu and then selecting the corresponding dropdown options.

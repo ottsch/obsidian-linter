@@ -1,6 +1,6 @@
 ---
 id: ole-hna7
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-09-21T00:03:19Z
@@ -22,3 +22,9 @@ Use copied fixtures rather than mutating /media/d/Vault. Include representative 
 
 Enabled-rule fixtures produce the expected normalized output; a second lint pass is byte-identical; check/write CLI behavior is covered; plugin and headless test suites pass.
 
+
+## Notes
+
+**2026-09-21T02:04:19Z**
+
+Added representative headless parity fixture/output and idempotence coverage, plus a 32-file CRLF/Unicode CLI stress test covering check, write, ignored sections, and clean reruns. Headless input now strips CRLF like the Obsidian plugin. Verified a read-only sweep of 67 Markdown files (~10s, no stderr), focused CLI/headless tests, full Jest (83 passed, 1 skipped), build, ESLint (0 errors), and CodeRabbit (findings: 0).

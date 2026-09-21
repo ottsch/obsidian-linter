@@ -5,6 +5,7 @@ import type {LinterSettings} from './settings-data';
 import './headless-rules-registry';
 import {setLanguage} from './lang/helpers';
 import {sortRules} from './rules';
+import {stripCr} from './utils/strings';
 
 export type HeadlessLintOptions = {
   text: string;
@@ -31,7 +32,7 @@ export function lint(options: HeadlessLintOptions): string {
   const modifiedAtFormatted = formatTimestamp(options.modifiedAt, options.locale);
 
   return runner.lintText({
-    oldText: options.text,
+    oldText: stripCr(options.text),
     fileInfo: {
       name: options.name,
       path: options.path,

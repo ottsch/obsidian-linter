@@ -11,6 +11,7 @@
     "dev": "node esbuild.config.mjs",
     "build": "node esbuild.config.mjs production",
     "test": "jest",
+    "lint:headless": "bun src/cli.ts",
     "test-suite": "jest -t \"$1\"",
     "docs": "node docs.js",
     "translate": "npm run build && node translation-helper.js",
