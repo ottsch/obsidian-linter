@@ -7,6 +7,9 @@ import {setLanguage} from './lang/helpers';
 import {sortRules} from './rules';
 import {stripCr} from './utils/strings';
 
+export {DEFAULT_SETTINGS} from './settings-data';
+export type {LinterSettings} from './settings-data';
+
 export type HeadlessLintOptions = {
   text: string;
   path: string;

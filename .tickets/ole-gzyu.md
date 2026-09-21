@@ -1,6 +1,6 @@
 ---
 id: ole-gzyu
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-09-21T02:21:18Z
