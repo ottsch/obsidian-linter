@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
-import {lint} from '../src/headless';
+import {lint, normalizeSettings} from '../src/headless';
 import {rules} from '../src/rules';
 import {DEFAULT_SETTINGS, LinterSettings} from '../src/settings-data';
 
@@ -58,6 +58,15 @@ test('lints through the registered rules without loading Obsidian', () => {
   });
 
   expect(output).toBe('# Heading\n');
+});
+
+test('normalizes a partial Obsidian policy before linting', () => {
+  const settings = normalizeSettings({
+    linterLocale: 'en',
+    ruleConfigs: {'line-break-at-document-end': {enabled: true}},
+  });
+
+  expect(lintFixture('# Heading', settings)).toBe('# Heading\n');
 });
 
 test('matches the representative fixture and is idempotent', () => {

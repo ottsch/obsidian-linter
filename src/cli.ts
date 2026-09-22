@@ -2,9 +2,8 @@ import {parseArgs} from 'node:util';
 import {basename, dirname, extname, relative, resolve, sep} from 'node:path';
 import {existsSync, readFileSync, statSync, writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import {lint} from './headless';
-import {rules} from './rules';
-import {DEFAULT_SETTINGS, LinterSettings} from './settings-data';
+import {lint, normalizeSettings} from './headless';
+import type {LinterSettings} from './settings-data';
 import {parseCustomReplacements} from './utils/strings';
 
 const defaultConfigPath = '.obsidian/plugins/obsidian-linter/data.json';
@@ -16,18 +15,12 @@ type CliValues = {
   write?: boolean;
 };
 
-type JsonObject = {[key: string]: unknown};
-
 function print(message: string): void {
   process.stdout.write(`${message}\n`);
 }
 
 function printError(message: string): void {
   process.stderr.write(`${message}\n`);
-}
-
-function isJsonObject(value: unknown): value is JsonObject {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function loadDefaultMisspellings(): Map<string, string> {
@@ -51,44 +44,7 @@ Default config: ${defaultConfigPath} relative to the current directory.
 }
 
 function loadSettings(configPath: string): LinterSettings {
-  const raw = JSON.parse(readFileSync(configPath, 'utf8')) as unknown;
-  if (!isJsonObject(raw)) {
-    throw new Error('configuration must contain a JSON object');
-  }
-
-  const rawRuleConfigs = raw.ruleConfigs ?? {};
-  if (!isJsonObject(rawRuleConfigs)) {
-    throw new Error('configuration ruleConfigs must be a JSON object');
-  }
-  const rawCommonStyles = raw.commonStyles;
-  if (rawCommonStyles !== undefined && !isJsonObject(rawCommonStyles)) {
-    throw new Error('configuration commonStyles must be a JSON object');
-  }
-  const commonStyles = isJsonObject(rawCommonStyles) ? rawCommonStyles : {};
-
-  const settings = {
-    ...DEFAULT_SETTINGS,
-    ...raw,
-    commonStyles: {
-      ...DEFAULT_SETTINGS.commonStyles,
-      ...commonStyles,
-    },
-    ruleConfigs: {},
-  } as LinterSettings;
-
-  for (const rule of rules) {
-    const configuredOptions = rawRuleConfigs[rule.settingsKey] ?? {};
-    if (!isJsonObject(configuredOptions)) {
-      throw new Error(`configuration for rule '${rule.settingsKey}' must be a JSON object`);
-    }
-
-    settings.ruleConfigs[rule.settingsKey] = {
-      ...rule.getDefaultOptions(),
-      ...configuredOptions,
-    };
-  }
-
-  return settings;
+  return normalizeSettings(JSON.parse(readFileSync(configPath, 'utf8')) as unknown);
 }
 
 function lintFile(filePath: string, settings: LinterSettings, currentTime: Date, defaultMisspellings: Map<string, string>): [string, string, string] {
