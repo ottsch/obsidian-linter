@@ -319,7 +319,7 @@ export class ListItemOptionBuilder<TOptions extends Options> extends OptionBuild
     if (options[this.configKey] !== undefined) {
       // `as string[]` is not enough because of the https://github.com/microsoft/TypeScript/issues/48992
       // make sure to remove any empty strings as well as they are not valid values
-      const optionValue = (options[this.configKey] as string[])
+      const optionValue = (options[this.configKey] === '' ? [] : options[this.configKey] as string[])
         .filter((el: string) => el !== '');
 
       ruleOptions[this.optionsKey] = optionValue as TOptions[

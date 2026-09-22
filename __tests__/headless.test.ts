@@ -69,6 +69,15 @@ test('normalizes a partial Obsidian policy before linting', () => {
   expect(lintFixture('# Heading', settings)).toBe('# Heading\n');
 });
 
+test('keeps omitted rule option defaults', () => {
+  const settings = normalizeSettings({
+    linterLocale: 'en',
+    ruleConfigs: {'dedupe-yaml-array-values': {enabled: true, 'ignore-keys': ''}},
+  });
+
+  expect(lintFixture('---\ntags: [one]\n---\n', settings)).toContain('tags: [one]');
+});
+
 test('matches the representative fixture and is idempotent', () => {
   const fixturePath = join(process.cwd(), 'test-vault/headless/representative.md');
   const expectedPath = join(process.cwd(), 'test-vault/headless/representative.linted.md');
